@@ -12,6 +12,9 @@ interface RestApi {
     @GET("/cicles/{Id}")
     suspend fun getCicle(@Path("Id") Id: Number): Response<ResponseBody>
 
+    @GET("/qualificacions?nota_gte=5&nota_lte=10&modul=1")
+    suspend fun getQualificacions(): Response<ResponseBody>
+
     @DELETE("/alumnes/{Id}")
     fun deleteAlumne(@Path("Id") Id: String):  Call<AlumneInfo>
 

@@ -43,6 +43,10 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        binding.getAprovats.setOnClickListener {
+            getAprovats();
+        }
+
     }
 
     private fun getCiclesId(id : String) {
@@ -72,7 +76,32 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    private fun getAprovats() {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:3001")
+            .build()
+        val service = retrofit.create(RestApi::class.java)
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = service.getQualificacions()
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
+                    val gson = GsonBuilder().setPrettyPrinting().create()
+                    val prettyJson = gson.toJson(
+                        JsonParser.parseString(
+                            response.body()
+                                ?.string()
+                        )
+                    )
+                    Log.d("Pretty Printed JSON :", prettyJson)
+                    val intent = Intent(this@MainActivity, MainActivity3::class.java)
+                    intent.putExtra("json_results", prettyJson)
+                    this@MainActivity.startActivity(intent)
+                } else {
+                    Log.e("RETROFIT_ERROR", response.code().toString())
+                }
+            }
+        }
+        }
 
     fun deleteAlumne(id : String){
         val retrofit = ServiceBuilder.buildService(RestApi::class.java)
